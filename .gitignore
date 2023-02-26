@@ -1,0 +1,26 @@
+# env:
+.env
+
+#logs:
+logs
+*.log
+
+# main ignore:
+.DS_Store
+.tmp
+node_modules/
+
+# JavaScript IDEs:
+.idea
+.vscode
+
+# Cache:
+.npm
+.cache/
+
+# PRJ:
+*.csv
+*.sw[op]
+dist/
+webpack.config.js
+
