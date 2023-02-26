@@ -34,8 +34,8 @@ class Enemy extends Sprite {
     // ctx.fillStyle = 'rgba(0, 0, 255, 0.3)'
     // ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
     // == to see small hitbox:
-    ctx.fillStyle = 'rgba(0, 200, 255, 0.4)'
-    ctx.fillRect(this.cropbox.position.x, this.cropbox.position.y, this.cropbox.width, this.cropbox.height);
+    // ctx.fillStyle = 'rgba(0, 200, 255, 0.4)'
+    // ctx.fillRect(this.cropbox.position.x, this.cropbox.position.y, this.cropbox.width, this.cropbox.height);
 
     this.away--;
 

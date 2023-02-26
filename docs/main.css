@@ -17,3 +17,25 @@ body {
 canvas {
   border-radius: 14px;
 }
+
+.game-win {
+  display: flex;
+  flex-direction: column;
+}
+
+.restart-btn {
+  font-family: 'VT323';
+  font-size: 28px;
+  color: red;
+  text-decoration: none;
+
+  padding: 6px 10px;
+  margin: 10px 0 0 10px;
+  border: 2px solid black;
+  background-color: #ffffff;
+  width: max-content;
+  transition: transform 0.3s;
+}
+.restart-btn:hover {
+  transform: scale(0.97);
+}

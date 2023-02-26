@@ -204,7 +204,7 @@ enemies.forEach((row, y) => {
 enemies.forEach((row, y) => {
   row.forEach((item, x) => {
     if (enemiesTiles.includes(item)) {
-      if (item === mushroomCode) {
+      if (item === mushroomCode || item === skeletonCode) {
         enemiesBlocks.push(new Enemy({
           pos: {
             x: x * tileSize - 70,
@@ -215,7 +215,7 @@ enemies.forEach((row, y) => {
           animations: enemyAnimationsMushroom,
           limits: enemyLimits
         }))
-      } else if (item === skeletonCode) {
+      } else if (item === skeletonCode + 'skeletons are not available now') {
         enemiesBlocks.push(new Enemy({
           pos: {
             x: x * tileSize - 70,
@@ -389,13 +389,13 @@ function game() {
   ctx.fillStyle = 'red';
   ctx.fillRect(Math.abs(camera.position.x) + 36, Math.abs(camera.position.y) + 25, player.health > 0 ? player.health : 0, 25);
 
-  const hbar = new Image();
-  hbar.src = './imgs/ui/heatlthBar.png';
-  ctx.drawImage(hbar, Math.abs(camera.position.x) + 10, Math.abs(camera.position.y) + 20, 129, 35 )
+  const healthBar = new Image();
+  healthBar.src = './imgs/ui/heatlthBar.png';
+  ctx.drawImage(healthBar, Math.abs(camera.position.x) + 10, Math.abs(camera.position.y) + 20, 129, 35 )
   // Coins counter:
-  const coinui = new Image();
-  coinui.src = './imgs/ui/coin.png';
-  ctx.drawImage(coinui, Math.abs(camera.position.x) + 10, Math.abs(camera.position.y) + 60, 25, 25 )
+  const coinUI = new Image();
+  coinUI.src = './imgs/ui/coin.png';
+  ctx.drawImage(coinUI, Math.abs(camera.position.x) + 10, Math.abs(camera.position.y) + 60, 25, 25 )
 
   ctx.fillStyle = '#3385e7';
   ctx.font = '22px DotGothic16'; //sans-serif';
@@ -404,8 +404,10 @@ function game() {
   // Game over
   if (player.dead) {
     ctx.fillStyle = 'red';
-    ctx.font = '68px DotGothic16'; //sans-serif';
-  ctx.fillText('GAME OVER', Math.abs(camera.position.x) + 150, Math.abs(camera.position.y) + 180)
+    ctx.font = '68px DotGothic16';
+    ctx.fillText('GAME OVER', Math.abs(camera.position.x) + 150, Math.abs(camera.position.y) + 180)
+    ctx.font = '30px DotGothic16';
+    ctx.fillText('Press \'Restart\'', Math.abs(camera.position.x) + 190, Math.abs(camera.position.y) + 220)
   }
   ctx.restore();
 
