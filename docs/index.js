@@ -361,115 +361,140 @@ function keyUpHandler(event) {
       break;
   }
 }
+// FPS controll settings:
+let stop = false;
+let fpsInterval
+let now
+let then
+let elapsed
+
+startAnimating(60);
+
+function startAnimating(fps) {
+    fpsInterval = 1000 / fps;
+    then = Date.now();
+    game();
+}
 
 // Main function:
 function game() {
+  if (stop) {
+    return;
+  }
   window.requestAnimationFrame(game);
-  ctx.fillStyle = 'black';
-  ctx.fillRect(0, 0, cnv.width, cnv.height);
 
-  ctx.save();
-  ctx.scale(scalingSize, scalingSize);
-  ctx.translate(camera.position.x, camera.position.y);
-  backgroundImg.update();
-  collisionBlocks.forEach(block => block.update());
-  coinsBlocks.forEach(coin => {
-    coin.update();
-    coin.updateFrames();
-  });
-  enemiesBlocks.forEach(e => {
-    e.update({ target: player });
-  });
-  player.update();
+  now = Date.now();
+  elapsed = now - then;
 
-  // UI:
-  // Health bar:
-  ctx.fillStyle = 'black';
-  ctx.fillRect(Math.abs(camera.position.x) + 36, Math.abs(camera.position.y) + 25, 100, 25);
-  ctx.fillStyle = 'red';
-  ctx.fillRect(Math.abs(camera.position.x) + 36, Math.abs(camera.position.y) + 25, player.health > 0 ? player.health : 0, 25);
+  if (elapsed > fpsInterval) {
+    then = now - (elapsed % fpsInterval);
 
-  const healthBar = new Image();
-  healthBar.src = './imgs/ui/heatlthBar.png';
-  ctx.drawImage(healthBar, Math.abs(camera.position.x) + 10, Math.abs(camera.position.y) + 20, 129, 35 )
-  // Coins counter:
-  const coinUI = new Image();
-  coinUI.src = './imgs/ui/coin.png';
-  ctx.drawImage(coinUI, Math.abs(camera.position.x) + 10, Math.abs(camera.position.y) + 60, 25, 25 )
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, cnv.width, cnv.height);
 
-  ctx.fillStyle = '#3385e7';
-  ctx.font = '22px DotGothic16'; //sans-serif';
-  ctx.fillText(player.coins, Math.abs(camera.position.x) + 36, Math.abs(camera.position.y) + 82)
+    ctx.save();
+    ctx.scale(scalingSize, scalingSize);
+    ctx.translate(camera.position.x, camera.position.y);
+    backgroundImg.update();
+    collisionBlocks.forEach(block => block.update());
+    coinsBlocks.forEach(coin => {
+      coin.update();
+      coin.updateFrames();
+    });
+    enemiesBlocks.forEach(e => {
+      e.update({ target: player });
+    });
+    player.update();
 
-  // Game over
-  if (player.dead) {
+    // UI:
+    // Health bar:
+    ctx.fillStyle = 'black';
+    ctx.fillRect(Math.abs(camera.position.x) + 36, Math.abs(camera.position.y) + 25, 100, 25);
     ctx.fillStyle = 'red';
-    ctx.font = '68px DotGothic16';
-    ctx.fillText('GAME OVER', Math.abs(camera.position.x) + 150, Math.abs(camera.position.y) + 180)
-    ctx.font = '30px DotGothic16';
-    ctx.fillText('Press \'Restart\'', Math.abs(camera.position.x) + 190, Math.abs(camera.position.y) + 220)
-  }
-  ctx.restore();
+    ctx.fillRect(Math.abs(camera.position.x) + 36, Math.abs(camera.position.y) + 25, player.health > 0 ? player.health : 0, 25);
 
-  player.velocity.x = 0;
+    const healthBar = new Image();
+    healthBar.src = './imgs/ui/heatlthBar.png';
+    ctx.drawImage(healthBar, Math.abs(camera.position.x) + 10, Math.abs(camera.position.y) + 20, 129, 35 )
+    // Coins counter:
+    const coinUI = new Image();
+    coinUI.src = './imgs/ui/coin.png';
+    ctx.drawImage(coinUI, Math.abs(camera.position.x) + 10, Math.abs(camera.position.y) + 60, 25, 25 )
 
-  if (keys.a.pressed) {
-    if (player.hitbox.position.x <= 0) {
-      return;
+    ctx.fillStyle = '#3385e7';
+    ctx.font = '22px DotGothic16'; //sans-serif';
+    ctx.fillText(player.coins, Math.abs(camera.position.x) + 36, Math.abs(camera.position.y) + 82)
+
+    // Game over
+    if (player.dead) {
+      ctx.fillStyle = 'red';
+      ctx.font = '68px DotGothic16';
+      ctx.fillText('GAME OVER', Math.abs(camera.position.x) + 150, Math.abs(camera.position.y) + 180)
+      ctx.font = '30px DotGothic16';
+      ctx.fillText('Press \'Restart\'', Math.abs(camera.position.x) + 190, Math.abs(camera.position.y) + 220)
     }
-    keys.space.pressed = false;
-    player.velocity.x = -movmentSpeed;
-    player.switchAnimation('runLeft');
-    player.lastDirection = 'left';
-    player.shouldMoveCameraLeft();
-  } else if (keys.d.pressed) {
-    keys.space.pressed = false;
-    player.velocity.x = movmentSpeed;
-    player.switchAnimation('run');
-    player.lastDirection = 'right';
-    player.shouldMoveCameraRight();
-  }
+    ctx.restore();
 
-  if (!player.velocity.x && !keys.space.pressed && player.await <= 0) {
-    if (player.lastDirection === 'right') {
-      player.switchAnimation('idle');
-    } else {
-      player.switchAnimation('idleLeft');
-    }
-  }
+    player.velocity.x = 0;
 
-  if (keys.space.pressed && !player.velocity.x && !player.velocity.y) {
-    if (player.lastDirection === 'right') {
-      player.switchAnimation(player.attackType === 1 ? 'attack' : 'attackTwo');
-    } else {
-      player.switchAnimation('attackLeft');
-    }
-    player.checkForAttack(enemiesBlocks);
-
-    if (player.currentFrame === player.animations.attack.frameRate - 1) {
+    if (keys.a.pressed) {
+      if (player.hitbox.position.x <= 0) {
+        return;
+      }
       keys.space.pressed = false;
+      player.velocity.x = -movmentSpeed;
+      player.switchAnimation('runLeft');
+      player.lastDirection = 'left';
+      player.shouldMoveCameraLeft();
+    } else if (keys.d.pressed) {
+      keys.space.pressed = false;
+      player.velocity.x = movmentSpeed;
+      player.switchAnimation('run');
+      player.lastDirection = 'right';
+      player.shouldMoveCameraRight();
     }
-  }
 
-  if (!keys.space.pressed) {
-    player.attackType = player.attackType === 1 ? 2 : 1;
-  }
-
-  if (player.velocity.y < 0) {
-    player.shouldMoveCameraUp();
-
-    if (player.lastDirection === 'right') {
-      player.switchAnimation('jump');
-    } else {
-      player.switchAnimation('jumpLeft');
+    if (!player.velocity.x && !keys.space.pressed && player.await <= 0) {
+      if (player.lastDirection === 'right') {
+        player.switchAnimation('idle');
+      } else {
+        player.switchAnimation('idleLeft');
+      }
     }
-  } else if (player.velocity.y > 0) {
-    player.shouldMoveCameraDown();
 
-    if (player.lastDirection === 'right') {
-      player.switchAnimation('fall');
-    } else {
-      player.switchAnimation('fallLeft');
+    if (keys.space.pressed && !player.velocity.x && !player.velocity.y) {
+      if (player.lastDirection === 'right') {
+        player.switchAnimation(player.attackType === 1 ? 'attack' : 'attackTwo');
+      } else {
+        player.switchAnimation('attackLeft');
+      }
+      player.checkForAttack(enemiesBlocks);
+
+      if (player.currentFrame === player.animations.attack.frameRate - 1) {
+        keys.space.pressed = false;
+      }
+    }
+
+    if (!keys.space.pressed) {
+      player.attackType = player.attackType === 1 ? 2 : 1;
+    }
+
+    if (player.velocity.y < 0) {
+      player.shouldMoveCameraUp();
+
+      if (player.lastDirection === 'right') {
+        player.switchAnimation('jump');
+      } else {
+        player.switchAnimation('jumpLeft');
+      }
+    } else if (player.velocity.y > 0) {
+      player.shouldMoveCameraDown();
+
+      if (player.lastDirection === 'right') {
+        player.switchAnimation('fall');
+      } else {
+        player.switchAnimation('fallLeft');
+      }
     }
   }
 }
